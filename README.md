@@ -30,3 +30,5 @@ Once you installed pyAesCrypt you can also use it this way: https://github.com/m
 - pyAesCrypt
 - fire
 - progress
+
+`pip3 install -r requirements.txt`
