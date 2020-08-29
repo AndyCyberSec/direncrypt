@@ -21,6 +21,8 @@ It is recomended to not use clear text password in console. You can use a txt fi
 
 Remember to save the key file in a safe place.
 
+Once you installed pyAesCrypt you can also use it this way: https://github.com/marcobellaccini/pyAesCrypt
+
 # Requirements
 - pyAesCrypt
 - fire
