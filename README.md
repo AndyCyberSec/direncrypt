@@ -1,5 +1,5 @@
 # direncrypt
-Direncrypt uses pyAesCrypt to encrypt files inside a directory recursively.
+Direncrypt uses pyAesCrypt to recursively encrypt/decrypt files inside a directory.
 
 # Usage:
 ## Encryption
