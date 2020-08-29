@@ -22,6 +22,6 @@ It is recomended to not use clear text password in console. You can use a txt fi
 Remember to save the key file in a safe place.
 
 # Requirements
-pyAesCrypt
-fire
-progress.bar
+- pyAesCrypt
+- fire
+- progress.bar
