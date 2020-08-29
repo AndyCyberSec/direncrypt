@@ -24,4 +24,4 @@ Remember to save the key file in a safe place.
 # Requirements
 - pyAesCrypt
 - fire
-- progress.bar
+- progress
