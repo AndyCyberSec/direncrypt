@@ -16,7 +16,6 @@ bufferSize = 64 * 1024
 
 def getListOfFiles(dirName):
 
-	print(f"Please wait, listing files in {dirName}...")
 	# create a list of file and sub directories 
 	# names in the given directory 
 	listOfFile = os.listdir(dirName)
@@ -81,6 +80,7 @@ def encrypt(directory, password):
 
 	if checks(directory, password):
 		# Get the list of all files in directory tree at given path
+		print(f"Please wait while collecting files in {directory}...")
 		listOfFiles = getListOfFiles(directory)
 
 		n_key = len(listOfFiles)
@@ -88,7 +88,7 @@ def encrypt(directory, password):
 		pool = Pool(processes=8)
 
 		print("")
-		print('Encrypting files, please wait...')
+		print('Encrypting files:')
 
 		pool.map(partial(encrypt_pool, password=password), chunks)
 		pool.close()
@@ -98,6 +98,7 @@ def decrypt(directory, password):
 
 	if checks(directory, password):
 		# Get the list of all files in directory tree at given path
+		print(f"Please wait while collecting files in {directory}...")
 		listOfFiles = getListOfFiles(directory)
 
 		n_key = len(listOfFiles)
@@ -105,7 +106,7 @@ def decrypt(directory, password):
 		pool = Pool(processes=8)
 
 		print("")
-		print('Decrypting files, please wait...')
+		print('Decrypting files:')
 
 		pool.map(partial(decrypt_pool, password=password), chunks)
 		pool.close()
