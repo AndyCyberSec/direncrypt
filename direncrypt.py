@@ -15,26 +15,28 @@ bufferSize = 64 * 1024
 
 
 def getListOfFiles(dirName):
-    # create a list of file and sub directories 
-    # names in the given directory 
-    listOfFile = os.listdir(dirName)
-    allFiles = list()
-    # Iterate over all the entries
-    for entry in listOfFile:
-        # Create full path
-        fullPath = os.path.join(dirName, entry)
-        # If entry is a directory then get the list of files in this directory 
-        if os.path.isdir(fullPath):
-            allFiles = allFiles + getListOfFiles(fullPath)
-        else:
-            allFiles.append(fullPath)
-                
-    return allFiles 
+
+	print(f"Please wait, listing files in {dirName}...")
+	# create a list of file and sub directories 
+	# names in the given directory 
+	listOfFile = os.listdir(dirName)
+	allFiles = list()
+	# Iterate over all the entries
+	for entry in listOfFile:
+		# Create full path
+		fullPath = os.path.join(dirName, entry)
+		# If entry is a directory then get the list of files in this directory 
+		if os.path.isdir(fullPath):
+			allFiles = allFiles + getListOfFiles(fullPath)
+		else:
+			allFiles.append(fullPath)
+		
+	return allFiles 
 
 
 def encrypt_pool(listOfFiles, password):
 
-	bar = Bar(current_process().name + ': Encrypting files...', max=len(listOfFiles))
+	bar = Bar(current_process().name, max=len(listOfFiles))
 	for elem in listOfFiles:
 		ofname = elem + ".aes"
 		try:
@@ -52,7 +54,7 @@ def encrypt_pool(listOfFiles, password):
 
 def decrypt_pool(listOfFiles, password):
 
-	bar = Bar(current_process().name + ': Decrypting files...', max=len(listOfFiles))
+	bar = Bar(current_process().name, max=len(listOfFiles))
 	for elem in listOfFiles:
 		# open aes file
 		ofname = ""
@@ -82,10 +84,14 @@ def encrypt(directory, password):
 		listOfFiles = getListOfFiles(directory)
 
 		n_key = len(listOfFiles)
-		chunks = [listOfFiles[x:x+200] for x in range(0, n_key, 200)]
+		chunks = [listOfFiles[x:x+128] for x in range(0, n_key, 128)]
 		pool = Pool(processes=8)
 
+		print("")
+		print('Encrypting files, please wait...')
+
 		pool.map(partial(encrypt_pool, password=password), chunks)
+		pool.close()
 
 
 def decrypt(directory, password):
@@ -95,10 +101,14 @@ def decrypt(directory, password):
 		listOfFiles = getListOfFiles(directory)
 
 		n_key = len(listOfFiles)
-		chunks = [listOfFiles[x:x+200] for x in range(0, n_key, 200)]
+		chunks = [listOfFiles[x:x+128] for x in range(0, n_key, 128)]
 		pool = Pool(processes=8)
 
+		print("")
+		print('Decrypting files, please wait...')
+
 		pool.map(partial(decrypt_pool, password=password), chunks)
+		pool.close()
 
 
 def check_password(passw):
