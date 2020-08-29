@@ -3,10 +3,10 @@ Direncrypt uses pyAesCrypt to recursively encrypt/decrypt files inside a directo
 
 # Usage:
 ## Encryption
-`$ direncrypt.py encrypt directory password` 
+`$ python3 direncrypt.py encrypt directory password` 
 
 ## Decryption
-`$ direncrypt.py decrypt directory password` 
+`$ python3 direncrypt.py decrypt directory password` 
 
 ## note
 pyAesCrypt assume that a good password is at least 8 chars long and includes at least:
@@ -18,8 +18,8 @@ pyAesCrypt assume that a good password is at least 8 chars long and includes at 
 It is recomended to not use clear text password in console. You can use a txt file this way:
 
 ```
-$ ./direncrypt.py encrypt directory $(cat /path/to(key.txt)
-$ ./direncrypt.py decrypt directory $(cat /path/to(key.txt)
+$ python3 direncrypt.py encrypt directory $(cat /path/to(key.txt)
+$ python3 direncrypt.py decrypt directory $(cat /path/to(key.txt)
 ```
 
 Remember to save the key file in a safe place.
