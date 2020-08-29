@@ -5,6 +5,8 @@ import sys
 import os
 import pyAesCrypt
 from progress.bar import Bar
+from multiprocessing import Pool, current_process
+from functools import partial
 
 maxPassLen = 1024  # maximum password length (number of chars)
 
@@ -30,17 +32,37 @@ def getListOfFiles(dirName):
     return allFiles 
 
 
-def encrypt(directory, password):
+def encrypt_pool(listOfFiles, password):
 
-	if checks(directory, password):
-		# Get the list of all files in directory tree at given path
-		listOfFiles = getListOfFiles(directory)
+	bar = Bar(current_process().name + ': Encrypting files...', max=len(listOfFiles))
+	for elem in listOfFiles:
+		ofname = elem + ".aes"
+		try:
+			pyAesCrypt.encryptFile(elem, ofname, password, bufferSize)
+			os.remove(elem)
+			bar.next()
+		# handle IO errors
+		except IOError as ex:
+			exit(ex)
+		# handle value errors
+		except ValueError as ex:
+			exit(ex)
+	bar.finish()
 
-		bar = Bar('Encrypting files...', max=len(listOfFiles))
-		for elem in listOfFiles:
-			ofname = elem + ".aes"
+
+def decrypt_pool(listOfFiles, password):
+
+	bar = Bar(current_process().name + ': Decrypting files...', max=len(listOfFiles))
+	for elem in listOfFiles:
+		# open aes file
+		ofname = ""
+		if elem.endswith(".aes"):
+			ofname = elem[:-4]
+
+		if len(ofname) != 0:
+			# call decryption function
 			try:
-				pyAesCrypt.encryptFile(elem, ofname, password, bufferSize)
+				pyAesCrypt.decryptFile(elem, ofname, password, bufferSize)
 				os.remove(elem)
 				bar.next()
 			# handle IO errors
@@ -49,7 +71,21 @@ def encrypt(directory, password):
 			# handle value errors
 			except ValueError as ex:
 				exit(ex)
-		bar.finish()
+	bar.finish()	
+
+	
+
+def encrypt(directory, password):
+
+	if checks(directory, password):
+		# Get the list of all files in directory tree at given path
+		listOfFiles = getListOfFiles(directory)
+
+		n_key = len(listOfFiles)
+		chunks = [listOfFiles[x:x+200] for x in range(0, n_key, 200)]
+		pool = Pool(processes=8)
+
+		pool.map(partial(encrypt_pool, password=password), chunks)
 
 
 def decrypt(directory, password):
@@ -58,26 +94,11 @@ def decrypt(directory, password):
 		# Get the list of all files in directory tree at given path
 		listOfFiles = getListOfFiles(directory)
 
-		bar = Bar('Decrypting files...', max=len(listOfFiles))
-		for elem in listOfFiles:
-			# open aes file
-			ofname = ""
-			if elem.endswith(".aes"):
-				ofname = elem[:-4]
+		n_key = len(listOfFiles)
+		chunks = [listOfFiles[x:x+200] for x in range(0, n_key, 200)]
+		pool = Pool(processes=8)
 
-			if len(ofname) != 0:
-				# call decryption function
-				try:
-					pyAesCrypt.decryptFile(elem, ofname, password, bufferSize)
-					os.remove(elem)
-					bar.next()
-				# handle IO errors
-				except IOError as ex:
-					exit(ex)
-				# handle value errors
-				except ValueError as ex:
-					exit(ex)
-		bar.finish()
+		pool.map(partial(decrypt_pool, password=password), chunks)
 
 
 def check_password(passw):
