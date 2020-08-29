@@ -8,6 +8,7 @@ Python wrapper around pyAesCrypt to encrypt files inside directory recursively.
 ## Decryption
 `$ direncrypt.py decrypt directory password` 
 
+## note
 pyAesCrypt assume that a good password is at least 8 chars long and includes at least:
 - 1 lowercase char
 - 1 uppercase char
